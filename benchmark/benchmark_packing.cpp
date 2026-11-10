@@ -94,11 +94,18 @@ int main(int argc, const char *argv[]) {
   cu::Stream stream;
 
   // Allocate memory for GEMM input / output
-  const size_t bytes_out =
+  // Packing reads the unpacked data and writes the packed data, unpacking does
+  // the reverse. Size the buffers accordingly, otherwise one of the kernels
+  // accesses memory out of bounds.
+  const size_t bytes_unpacked =
       *std::max_element(N.begin(), N.end()) * sizeof(unsigned char);
   const size_t packing_factor =
       sizeof(unsigned) * CHAR_BIT / sizeof(unsigned char);
-  const size_t bytes_in = bytes_out * sizeof(unsigned) / packing_factor;
+  const size_t bytes_packed =
+      bytes_unpacked * sizeof(unsigned) / packing_factor;
+  const bool pack = packing_direction == ccglib::forward;
+  const size_t bytes_in = pack ? bytes_unpacked : bytes_packed;
+  const size_t bytes_out = pack ? bytes_packed : bytes_unpacked;
   cu::DeviceMemory d_input(bytes_in);
   cu::DeviceMemory d_output(bytes_out);
 
