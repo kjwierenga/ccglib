@@ -17,6 +17,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - The numeric values of the `ValueType` enumerators changed because the enum
   is in alphabetical order. Code must use the enumerator names; hardcoded
   integers would now mean something else.
+- Fix out-of-bounds memory access in the packing benchmark in the pack
+  direction, which caused a GPU memory access fault on AMD GPUs for large sizes
 
 ## \[0.2.1\] - 2026-04-28
 
